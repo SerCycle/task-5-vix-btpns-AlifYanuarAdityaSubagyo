@@ -1,9 +1,8 @@
 package main
 
 import (
-	// "fmt"
-
 	"fmt"
+
 	"log"
 	"net/http"
 
@@ -11,7 +10,10 @@ import (
 	// "github.com/go-playground/validator/v10"
 
 	"github.com/SerCycle/BTPNFinalProject/handler"
-	"github.com/SerCycle/BTPNFinalProject/model"
+	// "github.com/SerCycle/BTPNFinalProject/model"
+	"github.com/SerCycle/BTPNFinalProject/user"
+
+	// "github.com/SerCycle/BTPNFinalProject/repository"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -23,11 +25,28 @@ func main() {
 		log.Fatal("DB Connetion Error")
 	}
 
-	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&user.User{})
+
+	userRepository := user.NewRepository(db)
+
+	// user := user.User{
+	// 	Username: "wijayanto",
+	// 	Email:    "jaya@mail.com",
+	// 	Password: "gimang123",
+	// }
+
+	// userRepository.Create(user)
+
+	user, err := userRepository.FindByID(5)
+
+	// for _, repository := range users {
+	fmt.Println("Username :", user.Username)
+	// }
+
 	// Testing CRUD
 
 	// AddUser := model.User{}
-	// AddUser.Username = "Suyanto Gimmick"
+	// AddUser.Username = "SuyantoGimmick"
 	// AddUser.Email = "Gimmick@mail.com"
 	// AddUser.Password = "Testing321"
 
@@ -61,16 +80,16 @@ func main() {
 	// 	fmt.Println("ga ke update")
 	// }
 
-	var ListUser model.User
+	// var ListUser model.User
 
-	err = db.Debug().Where("username = ?", "asmarajinggo").Find(&ListUser).Error
-	if err != nil {
-		fmt.Println("ga ketarik")
-	}
-	err = db.Delete(&ListUser).Error
-	if err != nil {
-		fmt.Println("ga keapus")
-	}
+	// err = db.Debug().Where("username = ?", "asmarajinggo").Find(&ListUser).Error
+	// if err != nil {
+	// 	fmt.Println("ga ketarik")
+	// }
+	// err = db.Delete(&ListUser).Error
+	// if err != nil {
+	// 	fmt.Println("ga keapus")
+	// }
 
 	router := gin.Default()
 
