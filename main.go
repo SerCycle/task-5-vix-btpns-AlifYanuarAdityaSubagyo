@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"log"
 	"net/http"
 
@@ -11,6 +9,7 @@ import (
 
 	"github.com/SerCycle/BTPNFinalProject/handler"
 	// "github.com/SerCycle/BTPNFinalProject/model"
+	"github.com/SerCycle/BTPNFinalProject/photo"
 	"github.com/SerCycle/BTPNFinalProject/user"
 
 	// "github.com/SerCycle/BTPNFinalProject/repository"
@@ -25,46 +24,11 @@ func main() {
 		log.Fatal("DB Connetion Error")
 	}
 
-	db.AutoMigrate(&user.User{})
+	db.AutoMigrate(&photo.Photo{})
 
 	userRepository := user.NewRepository(db)
-
-	// user := user.User{
-	// 	Username: "wijayanto",
-	// 	Email:    "jaya@mail.com",
-	// 	Password: "gimang123",
-	// }
-
-	// userRepository.Create(user)
-
-	user, err := userRepository.FindByID(5)
-
-	// for _, repository := range users {
-	fmt.Println("Username :", user.Username)
-	// }
-
-	// Testing CRUD
-
-	// AddUser := model.User{}
-	// AddUser.Username = "SuyantoGimmick"
-	// AddUser.Email = "Gimmick@mail.com"
-	// AddUser.Password = "Testing321"
-
-	// err = db.Create(&AddUser).Error
-	// if err != nil {
-	// 	fmt.Println("ada kesalahan add user")
-	// }
-
-	// var ListUser []model.User
-
-	// err = db.Debug().Where("username = ?", "Rocky Wijaya").Find(&ListUser).Error
-	// if err != nil {
-	// 	fmt.Println("ada kesalahan tarik data")
-	// }
-	// for _, lu := range ListUser {
-	// 	fmt.Println("Username: ", lu.Username)
-	// 	fmt.Println("ListUser", lu)
-	// }
+	userService := user.NewService(userRepository)
+	userHandler := handler.NewUserHandler(userService)
 
 	// var ListUser model.User
 
@@ -95,8 +59,12 @@ func main() {
 
 	router.GET("/", rootHandler)
 	router.GET("/hello", helloHandler)
-	router.POST("/users/register", handler.RegisterHandler)
-	router.GET("/users/login", handler.LoginHandler)
+	router.GET("/users", userHandler.GetUserList)
+	router.GET("/users/:id", userHandler.GetUser)
+	router.PUT("/users/:id", userHandler.UpdateHandler)
+	router.POST("/users/register", userHandler.RegisterHandler)
+	router.GET("/users/login", userHandler.LoginHandler)
+	router.DELETE("/users/:id", userHandler.DelUser)
 
 	router.Run(":8765")
 }
