@@ -19,6 +19,7 @@ func main() {
 		log.Fatal("DB Connetion Error")
 	}
 
+	db.AutoMigrate(&user.User{})
 	db.AutoMigrate(&photo.Photo{})
 
 	userRepository := user.NewRepository(db)
