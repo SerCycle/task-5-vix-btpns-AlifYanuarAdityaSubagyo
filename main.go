@@ -4,15 +4,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	// "github.com/go-playground/validator/v10"
-
 	"github.com/SerCycle/BTPNFinalProject/handler"
-	// "github.com/SerCycle/BTPNFinalProject/model"
 	"github.com/SerCycle/BTPNFinalProject/photo"
 	"github.com/SerCycle/BTPNFinalProject/user"
-
-	// "github.com/SerCycle/BTPNFinalProject/repository"
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -30,35 +25,13 @@ func main() {
 	userService := user.NewService(userRepository)
 	userHandler := handler.NewUserHandler(userService)
 
-	// var ListUser model.User
-
-	// err = db.Debug().Where("email = ?", "Gimmick@mail.com").Find(&ListUser).Error
-	// ListUser.Username = "pertamaasik"
-
-	// if err != nil {
-	// 	fmt.Println("ga ketarik")
-	// }
-
-	// err = db.Save(&ListUser).Error
-	// if err != nil {
-	// 	fmt.Println("ga ke update")
-	// }
-
-	// var ListUser model.User
-
-	// err = db.Debug().Where("username = ?", "asmarajinggo").Find(&ListUser).Error
-	// if err != nil {
-	// 	fmt.Println("ga ketarik")
-	// }
-	// err = db.Delete(&ListUser).Error
-	// if err != nil {
-	// 	fmt.Println("ga keapus")
-	// }
+	photoRepository := photo.NewRepository(db)
+	photoService := photo.NewService(photoRepository)
+	photoHandler := handler.NewPhotoHandler(photoService)
 
 	router := gin.Default()
 
 	router.GET("/", rootHandler)
-	router.GET("/hello", helloHandler)
 	router.GET("/users", userHandler.GetUserList)
 	router.GET("/users/:id", userHandler.GetUser)
 	router.PUT("/users/:id", userHandler.UpdateHandler)
@@ -66,17 +39,17 @@ func main() {
 	router.GET("/users/login", userHandler.LoginHandler)
 	router.DELETE("/users/:id", userHandler.DelUser)
 
+	router.POST("/photos", photoHandler.AddPhotoHandler)
+	router.GET("/photos", photoHandler.GetPhotoList)
+	router.GET("/photos/:id", photoHandler.GetPhoto)
+	router.PUT("/photos/:id", photoHandler.UpdateHandler)
+	router.DELETE("/photos/:id", photoHandler.DelPhoto)
+
 	router.Run(":8765")
 }
 
 func rootHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"test": "aman",
-	})
-}
-
-func helloHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"hasil": "siap",
 	})
 }

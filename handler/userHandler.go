@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -9,6 +10,8 @@ import (
 	"github.com/SerCycle/BTPNFinalProject/user"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 type userHandler struct {
@@ -62,10 +65,30 @@ func (h *userHandler) GetUser(c *gin.Context) {
 }
 
 func (h *userHandler) LoginHandler(c *gin.Context) {
+
+	dsn := "root:1202190187@tcp(127.0.0.1:3306)/btpnapigolang?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("DB Connetion Error")
+	}
+
 	email := c.Query("email")
 	password := c.Query("password")
 
-	c.JSON(http.StatusOK, gin.H{"email": email, "password": password})
+	var ListUser user.User
+
+	err = db.Debug().Where(map[string]interface{}{"email": email, "password": password}).First(&ListUser).Error
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Terjadi kesalahan mohon di cek kembali",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"Status": "Berhasil Login",
+	})
 }
 
 func (h *userHandler) RegisterHandler(c *gin.Context) {
