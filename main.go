@@ -50,6 +50,6 @@ func main() {
 
 func rootHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"test": "aman",
+		"Status": "Server Aman",
 	})
 }
